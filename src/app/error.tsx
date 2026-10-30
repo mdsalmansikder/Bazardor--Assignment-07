@@ -16,12 +16,16 @@ export default function GlobalError({
 
   return (
     <section className="message-page page-container">
-      <span className="message-icon">⚠️</span>
+      <span className="message-icon" aria-hidden="true">⚠️</span>
       <h1>এই মুহূর্তে তথ্য দেখানো যাচ্ছে না</h1>
       <p>সংযোগে সমস্যা হয়েছে। আবার চেষ্টা করুন অথবা হোম পেজে ফিরে যান।</p>
       <div className="message-actions">
-        <button className="button button-primary" onClick={reset}>আবার চেষ্টা করুন</button>
-        <Link className="button button-outline" href="/">হোম পেজে ফিরে যান</Link>
+        <button className="button button-primary" onClick={reset} type="button">
+          আবার চেষ্টা করুন
+        </button>
+        <Link className="button button-outline" href="/">
+          হোম পেজে ফিরে যান
+        </Link>
       </div>
     </section>
   );

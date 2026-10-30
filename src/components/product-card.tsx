@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { formatPrice, formatUnit } from "@/lib/format";
+import { formatBengaliNumber, formatPrice, formatUnit } from "@/lib/format";
 import type { Product } from "@/lib/products";
 
 export function ProductCard({ product }: { product: Product }) {
   const direction = product.change.dir;
   const changeLabel =
     direction === "up"
-      ? `▲ ${product.change.pct}`
+      ? `▲ ${formatBengaliNumber(product.change.pct)}`
       : direction === "down"
-        ? `▼ ${Math.abs(product.change.pct)}`
+        ? `▼ ${formatBengaliNumber(Math.abs(product.change.pct))}`
         : "— ০.০";
 
   return (

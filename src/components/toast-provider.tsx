@@ -27,10 +27,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const toast = useCallback((message: string, kind: ToastKind = "success") => {
     const id = Date.now() + Math.random();
     setMessages((current) => [...current, { id, message, kind }]);
-    window.setTimeout(
-      () => setMessages((current) => current.filter((item) => item.id !== id)),
-      4000,
-    );
+    if (typeof window !== "undefined") {
+      window.setTimeout(
+        () => setMessages((current) => current.filter((item) => item.id !== id)),
+        4000,
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -38,8 +40,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       const detail = (event as CustomEvent<ToastMessage>).detail;
       if (detail?.message) toast(detail.message, detail.kind);
     }
-    window.addEventListener("bazardor:toast", showAuthToast);
-    return () => window.removeEventListener("bazardor:toast", showAuthToast);
+    if (typeof window !== "undefined") {
+      window.addEventListener("bazardor:toast", showAuthToast);
+      return () => window.removeEventListener("bazardor:toast", showAuthToast);
+    }
   }, [toast]);
 
   return (
@@ -62,7 +66,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 export function notify(message: string, kind: ToastKind = "success") {
-  window.dispatchEvent(
-    new CustomEvent("bazardor:toast", { detail: { message, kind } }),
-  );
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("bazardor:toast", { detail: { message, kind } }),
+    );
+  }
 }

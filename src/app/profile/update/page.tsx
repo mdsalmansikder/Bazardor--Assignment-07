@@ -11,13 +11,15 @@ export default function UpdateProfilePage() {
   const router = useRouter();
   const toast = useToast();
   const { data: session } = authClient.useSession();
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const displayedName = name ?? session?.user?.name ?? "";
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const updatedName = name.trim();
+    const updatedName = displayedName.trim();
     if (updatedName.length < 2) {
       const message = "নাম অন্তত ২ অক্ষরের হতে হবে।";
       setError(message);
@@ -54,7 +56,7 @@ export default function UpdateProfilePage() {
         <div className="update-card">
           <p className="eyebrow">অ্যাকাউন্ট সেটিংস</p>
           <h1>আপনার তথ্য আপডেট করুন</h1>
-          <p>বর্তমান নাম: {session?.user?.name}</p>
+          <p>বর্তমান নাম: {session?.user?.name || "—"}</p>
           <form className="auth-form" onSubmit={handleSubmit}>
             <label htmlFor="profile-name">নতুন নাম</label>
             <input
@@ -64,10 +66,10 @@ export default function UpdateProfilePage() {
               onChange={(event) => setName(event.target.value)}
               placeholder="আপনার নাম লিখুন"
               required
-              value={name}
+              value={displayedName}
             />
             {error && <p className="form-error" role="alert">{error}</p>}
-            <button className="button button-primary auth-submit" disabled={isSubmitting}>
+            <button className="button button-primary auth-submit" disabled={isSubmitting} type="submit">
               {isSubmitting ? "আপডেট হচ্ছে..." : "তথ্য আপডেট করুন"}
             </button>
           </form>

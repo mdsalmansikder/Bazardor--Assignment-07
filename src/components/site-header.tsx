@@ -7,6 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/components/toast-provider";
 
 const subscribeToDate = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
   const interval = window.setInterval(callback, 60_000);
   return () => window.clearInterval(interval);
 };
@@ -75,7 +76,11 @@ export function SiteHeader() {
                 <span className="avatar">{session.user.name?.slice(0, 1) || "👤"}</span>
                 <span className="profile-name">{session.user.name || "প্রোফাইল"}</span>
               </Link>
-              <button className="button button-outline header-button" onClick={handleSignOut}>
+              <button
+                className="button button-outline header-button"
+                onClick={handleSignOut}
+                type="button"
+              >
                 সাইন আউট
               </button>
             </>

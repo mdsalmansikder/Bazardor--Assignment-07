@@ -23,6 +23,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function getNextPath() {
+    if (typeof window === "undefined") return "/";
     const requestedPath = new URLSearchParams(window.location.search).get("next");
     return requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
       ? requestedPath
@@ -30,6 +31,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("registered") === "1") {
       toast("অ্যাকাউন্ট তৈরি হয়েছে। এখন সাইন ইন করুন।");
@@ -41,7 +43,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError("");
 
     if (isSignUp && name.trim().length < 2) {
-      setError("আপনার নাম অন্তত ২ অক্ষরের হতে হবে।");
+      setError("আপনার নাম অন্তত ২ অক্ষরের হতে باشد।");
       toast("আপনার নাম অন্তত ২ অক্ষরের হতে হবে।", "error");
       return;
     }
@@ -97,7 +99,14 @@ export function AuthForm({ mode }: AuthFormProps) {
         callbackURL: getNextPath(),
       });
       if (result.error) {
-        const message = result.error.message ?? `${provider} দিয়ে সাইন ইন করা যায়নি।`;
+        let message = result.error.message ?? `${provider} দিয়ে সাইন ইন করা যায়নি।`;
+        if (
+          result.error.code === "PROVIDER_NOT_FOUND" ||
+          result.error.message?.toLowerCase().includes("provider not found")
+        ) {
+          const providerName = provider === "google" ? "Google" : "GitHub";
+          message = `${providerName} লগইন এখনো সার্ভারে কনফিগার করা হয়নি (.env ফাইলে ${provider.toUpperCase()}_CLIENT_ID ও ${provider.toUpperCase()}_CLIENT_SECRET প্রয়োজন)।`;
+        }
         setError(message);
         toast(message, "error");
         setIsSubmitting(false);
@@ -162,7 +171,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             />
           </label>
           {error && <p className="form-error" role="alert">{error}</p>}
-          <button className="button button-primary auth-submit" disabled={isSubmitting}>
+          <button className="button button-primary auth-submit" disabled={isSubmitting} type="submit">
             {isSubmitting ? "অপেক্ষা করুন..." : isSignUp ? "অ্যাকাউন্ট তৈরি করুন" : "সাইন ইন"}
           </button>
         </form>

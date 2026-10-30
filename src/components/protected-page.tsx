@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/components/toast-provider";
@@ -15,9 +15,11 @@ export function ProtectedPage({
   const router = useRouter();
   const toast = useToast();
   const { data: session, isPending } = authClient.useSession();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!isPending && !session?.user) {
+    if (!isPending && !session?.user && !hasRedirected.current) {
+      hasRedirected.current = true;
       toast("এই পৃষ্ঠাটি দেখতে আগে সাইন ইন করুন।", "error");
       router.replace(`/signin?next=${encodeURIComponent(redirectTo)}`);
     }
